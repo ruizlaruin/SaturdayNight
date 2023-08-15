@@ -1,70 +1,47 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Result } from "../../Interfaces/apiInterface";
 import Loader from "../../Components/Loader";
 import Cards from "../../Components/Cards";
 import Paginator from "../../Components/Paginator";
 import { Link } from "react-router-dom";
+import useFetchMultiple from "../../Hooks/useFetchMultiple";
+import Carousel from "../../Components/Carousel";
 
 const Home = () => {
-  const [chars, setChars] = useState<Result[]>([]);
-  const [loader, setLoader] = useState(true);
-  const [currentPage, setCurrentPage] = useState<number>(1);
-
-  //API consumption
-  const fetchData = async (currentPage: number) => {
-    try {
-      const res = await fetch(
-        `https://rickandmortyapi.com/api/character/?page=${currentPage}`
-      );
-      const data = await res.json();
-      setChars(data.results);
-      //console.log(data.results);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  useEffect(() => {
-    try {
-      setLoader(false);
-      fetchData(currentPage);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoader(true);
-    }
-  }, [currentPage]);
+  const [currentPage, setCurrentPage] = useState<number>(
+    +(localStorage.currentPage || 1)
+  );
+  const [chars, loader] = useFetchMultiple(currentPage);
 
   return (
     <>
+      <section>
+        <Carousel chars={chars} />
+      </section>
       <div
-        className="d-flex flex-wrap align-items-betwen  justify-content-center mx-3"
+        className="d-flex flex-wrap  align-content-around justify-content-evenly "
         style={{ background: "rgb(184, 184, 72)" }}
       >
-        <div className="gx-5 d-flex flex-wrap align-content-around mx-3">
-          {!loader ? (
-            <Loader />
-          ) : (
-            chars.map((char, i) => {
-              return (
-                <div
-                  key={i}
-                  className="py-2 px-2 d-flex flex-wrap align-items-center justify-content-center"
+        {!loader ? (
+          <Loader />
+        ) : (
+          chars.map((char: Result, i: number) => {
+            return (
+              <div key={i} className="py-2">
+                <Link
+                  className="text-decoration-none "
+                  to={`/details/${char.id}`}
                 >
-                  <Link
-                    className="text-decoration-none "
-                    to={`/details/${char.id}`}
-                  >
-                    <Cards chars={char} />
-                  </Link>
-                </div>
-              );
-            })
-          )}
-        </div>
-
-        <Paginator currentPage={currentPage} setCurrentPage={setCurrentPage} />
+                  <Cards chars={char} />
+                </Link>
+              </div>
+            );
+          })
+        )}
       </div>
+      <section className="bg-warning d-flex justify-content-center align-content-center pt-3">
+        <Paginator currentPage={currentPage} setCurrentPage={setCurrentPage} />
+      </section>
     </>
   );
 };

@@ -12,9 +12,24 @@ import {
   CButton,
 } from "@coreui/react";
 import { useState } from "react";
+import { Navigate, redirect } from "react-router-dom";
 
 const Navbar = () => {
   const [visible, setVisible] = useState(false);
+  const [searchVal, setSearchVal] = useState("");
+
+  const handleChange = (e: any) => {
+    setSearchVal(e.target.value);
+  };
+
+  const handleClick = (e: any) => {
+    e.stopPropagation();
+    e.nativeEvent.stopImmediatePropagation();
+    console.log("test");
+    //redirect(`search/${searchVal}`);
+    redirect("/details/1");
+  };
+
   return (
     <>
       <CNavbar expand="lg" colorScheme="light" className="bg-light ms-auto">
@@ -32,9 +47,18 @@ const Navbar = () => {
                 </CNavLink>
               </CNavItem>
             </CNavbarNav>
-            <CForm className="d-flex">
-              <CFormInput type="search" className="me-2" placeholder="Search" />
-              <CButton type="submit" color="success" variant="outline">
+            <CForm
+              className="d-flex"
+              method="get"
+              action={`search/${searchVal}`}
+            >
+              <CFormInput
+                type="search"
+                className="me-2"
+                placeholder="Search"
+                onChange={handleChange}
+              />
+              <CButton type="submit" color="success" onSubmit={handleClick}>
                 Search
               </CButton>
             </CForm>

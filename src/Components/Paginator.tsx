@@ -14,11 +14,12 @@ const Paginator = (props: PaginatorProps) => {
   };
 
   return (
-    <CPagination aria-label="Page navigation example">
+    <CPagination
+      aria-label="Page navigation example"
+      style={{ cursor: "pointer" }}
+    >
       <CPaginationItem aria-label="Previous">
-        <span onClick={() => handleDecrease()} aria-hidden="true">
-          &laquo;
-        </span>
+        <span onClick={() => handleDecrease()}>&laquo;</span>
       </CPaginationItem>
       <CPaginationItem>{props.currentPage}</CPaginationItem>
       <CPaginationItem
